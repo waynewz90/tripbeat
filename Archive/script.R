@@ -29,8 +29,6 @@ library(leaflet)
 options(scipen=999)
 
 
-
-
 # #Upcoming feature: If no accommodation, find centoid, and pass on to hotel/airbnb search
 # test <- as.numeric(geocode("1.306928, 103.898943"))
 # test2 <- revgeocode(test)
