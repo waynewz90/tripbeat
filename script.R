@@ -41,14 +41,14 @@ clusterOption <- 'a' #a or m, for auto or manual identification of clusters
 manual.clusterNum.input <- 4 #If manual cluster selected, how many clusters does user want
 poi.limit <- 6 #Number of places one can visit in a day
 
-csv.data <- read.csv("home_poi.csv", header = FALSE, stringsAsFactors = FALSE)[[1]] #Just update csv file directly for testing; first row taken as home
-home <- csv.data[1]
-combined <- csv.data
+# csv.data <- read.csv("home_poi.csv", header = FALSE, stringsAsFactors = FALSE)[[1]] #Just update csv file directly for testing; first row taken as home
+# home <- csv.data[1]
+# combined <- csv.data
 # ALTERNATIVELY
-# home <- c("438772")
-# # poi <- c("Katong V", "Parkway Parade", "Marine Parade CC", "City Hall", "Esplanade", "Marina Bay Sands", "Vivocity", "Sentosa")
+home <- c("438772")
+poi <- c("Katong V", "Parkway Parade", "Marine Parade CC", "City Hall", "Esplanade", "Marina Bay Sands", "Vivocity", "Sentosa")
 # poi <- c("Parkway Parade", "Katong V", "Marine Parade CC")
-# combined <- c(home, poi)
+combined <- c(home, poi)
 
 
 all <- unlist(lapply(combined, FUN=function(x){paste(x, ", ", city, sep = "")}))
