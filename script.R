@@ -15,6 +15,7 @@
 # - Check why Singapore City Gallery lat/lon is NA - is there repeat call in the API?
 
 library(ggmap)
+library(googleway)
 library(Rcpp)
 library(sp)
 library(cluster)
@@ -45,20 +46,26 @@ poi.limit <- 6 #Number of places one can visit in a day
 # home <- csv.data[1]
 # combined <- csv.data
 # ALTERNATIVELY
-home <- c("438772")
-poi <- c("Katong V", "Parkway Parade", "Marine Parade CC", "City Hall", "Esplanade", "Marina Bay Sands", "Vivocity", "Sentosa")
+home <- c("161 Haig Road")
+poi <- c("Katong V", "Parkway Parade", "Marine Parade CC")
+#poi <- c("Katong V", "Parkway Parade", "Marine Parade CC", "City Hall", "Esplanade", "Marina Bay Sands", "Vivocity", "Sentosa")
 # poi <- c("Parkway Parade", "Katong V", "Marine Parade CC")
 combined <- c(home, poi)
 
 
 all <- unlist(lapply(combined, FUN=function(x){paste(x, ", ", city, sep = "")}))
 
+
+api_key <- readline(prompt="Paste API key: ")
+register_google(key = api_key)
+                
 # ---- RUN PHASE 1: Cluster ----
 
 all.df <- as.data.frame(all)
 colnames(all.df) <- "Name"
 geocodes <- geocode(all)
 geocodes2 <- cbind(all.df, geocodes)
+
 
 #Initial plot using Leaflet (optional)
 p <- leaflet() %>%
@@ -391,6 +398,9 @@ optimizeRoute <- function(data, n){
   
 }
 
+
+
+
 #Calls optimizeRoute() on each cluster, storing returned list(s) in a list
 final.results <- vector("list", final.clusterNum)
 for(i in 1:final.clusterNum){ 
@@ -421,6 +431,51 @@ m
 
 
 # ---- END OF CORE PROGRAM ----
+
+##############################################
+geocodes7 <- data[data$cluster == n, ]
+cluster.poi <- geocodes7$Places
+all <- c(home, cluster.poi)
+
+from <- as.vector(sapply(all, FUN = function(x) rep(x,length(all))))
+to <- rep(all, length(all))
+
+from <- c("waco, texas")
+to <- c("washington dc")
+distresult <- mapdist(from=from, to=to, mode='walking') 
+
+
+from <- c("161 Haig Road", "161 Haig Road", "161 Haig Road", "Katong V, Singapore", "Katong V, Singapore", "Katong V, Singapore", "Parkway Parade, Singapore", "Parkway Parade, Singapore","Parkway Parade, Singapore")
+to <- c("161 Haig Road", "Katong V, Singapore", "Parkway Parade, Singapore", "161 Haig Road", "Katong V, Singapore", "Parkway Parade, Singapore", "161 Haig Road", "Katong V, Singapore", "Parkway Parade, Singapore")
+
+from <- c("161 Haig Road", "161 Haig Road", "161 Haig Road")
+to <- c("161 Haig Road", "Katong V, Singapore", "Parkway Parade, Singapore")
+distresult <- mapdist(from=from, to=to, mode='walking') 
+
+
+#Using googleway
+#Observations: ggmap output seems to be inconsistent (df vs list); at least googleway seems consistent
+
+test0 <- google_distance(origins = list(c("Melbourne Airport, Australia"),
+                                        c("MCG, Melbourne, Australia"),
+                                        c(-37.81659, 144.9841)),
+                         destinations = c("Portsea, Melbourne, Australia"),
+                         key = api_key,
+                         simplify = TRUE)
+
+test1 <- google_distance(origins = list(c("waco, texas")),
+                destinations = c("washington dc"),
+                key = api_key,
+                simplify = TRUE)
+
+test2 <- google_distance(origins = list(c("161 Haig Road"),c("161 Haig Road"),c("161 Haig Road")),
+                        destinations = list(c("161 Haig Road"),c("Katong V, Singapore"),c("Parkway Parade, Singapore")),
+                        key = api_key,
+                        simplify = TRUE)
+
+
+
+
 
 #For 1 home + 8 POIs:
 #Calls routeQueryCheck() 11 times
